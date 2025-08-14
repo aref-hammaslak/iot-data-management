@@ -19,6 +19,7 @@ import {
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { PaginationDto } from './dtos/pagination.dto';
 
 @ApiExtraModels(SignalQueryFilterDto, SaveSignalDto)
 @Controller('xray-signal')
@@ -44,14 +45,25 @@ export class XraySignalController {
     explode: true,
     schema: { $ref: getSchemaPath(SignalQueryFilterDto) },
   })
+  @ApiQuery({
+    name: 'pagination',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    schema: { $ref: getSchemaPath(PaginationDto) },
+  })
   @ApiOperation({ summary: 'Get all signals' })
   @ApiResponse({ status: 200, description: 'Signals fetched successfully' })
   @Get()
   async findAll(
     @Query('signalQueryFilter') signalQueryFilter: SignalQueryFilterDto,
+    @Query('pagination') pagination: PaginationDto,
   ) {
-    const signals = await this.signalService.findAll(signalQueryFilter);
-    if (signals.length === 0) {
+    const signals = await this.signalService.findAll(
+      signalQueryFilter,
+      pagination,
+    );
+    if (signals.signals.length === 0) {
       throw new NotFoundException('No signals found');
     }
     return {

@@ -6,6 +6,7 @@ import { SaveSignalDto } from './dtos/save-signal.dto';
 import { plainToInstance } from 'class-transformer';
 import { SignalQueryFilterDto } from './dtos/signal-query-filter.dto';
 import { validate } from 'class-validator';
+import { PaginationDto } from './dtos/pagination.dto';
 
 @Injectable()
 export class SignalService {
@@ -32,9 +33,26 @@ export class SignalService {
     await xraySignal.save();
   }
 
-  async findAll(signalFilter: SignalQueryFilterDto) {
+  async findAll(signalFilter: SignalQueryFilterDto, pagination: PaginationDto) {
     const query = this.buildQuery(signalFilter);
-    return this.xraySignalModel.find(query).exec();
+    const { page, limit } = pagination;
+    const skip = (page - 1) * limit;
+    const [signals, total] = await Promise.all([
+      this.xraySignalModel
+        .find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ [signalFilter.sortBy]: signalFilter.sortOrder })
+        .exec(),
+      this.xraySignalModel.countDocuments(query).exec(),
+    ]);
+    return {
+      signals,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async deleteAll(signalFilter: SignalQueryFilterDto) {
