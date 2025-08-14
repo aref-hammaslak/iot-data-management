@@ -6,6 +6,7 @@ import {
   XRaySignalSchema,
 } from '../database/models/xray-signal.model';
 import { DatabaseModule } from '../database/database.module';
+import { XraySignalController } from './xray-signal.controller';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { DatabaseModule } from '../database/database.module';
       { name: XRaySignal.name, schema: XRaySignalSchema },
     ]),
   ],
-  controllers: [],
+  controllers: [XraySignalController],
   providers: [SignalService],
   exports: [SignalService],
 })
