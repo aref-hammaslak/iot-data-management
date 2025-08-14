@@ -2,7 +2,7 @@ import { connect, Channel } from 'amqplib';
 import { randomUUID } from 'crypto';
 
 const XRAY_QUEUE = process.env.XRAY_QUEUE || 'x-ray';
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
+const RABBITMQ_URL = process.env.RABBITMQ_URI || 'amqp://localhost';
 
 interface SaveSignalDto {
   deviceId: string;
