@@ -7,7 +7,7 @@ const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
 interface SaveSignalDto {
   deviceId: string;
   time: number;
-  data: [number, [number, number, number]];
+  data: [number, [number, number, number]][];
 }
 
 export class XrayProducerSimulator {
@@ -45,11 +45,25 @@ export class XrayProducerSimulator {
   }
 
   generateData(): SaveSignalDto {
-    const data: SaveSignalDto = {
+    //generate random data length between 1 and 5
+    const dataLength = Math.floor(Math.random() * 5) + 1;
+
+    //generate random data between 0 and 100
+    const data: [number, [number, number, number]][] = Array.from(
+      Array(dataLength),
+      () => [
+        Math.floor(Math.random() * 100),
+        [
+          Math.floor(Math.random() * 100),
+          Math.floor(Math.random() * 100),
+          Math.floor(Math.random() * 100),
+        ],
+      ],
+    );
+    return {
       deviceId: randomUUID(),
       time: Date.now(),
-      data: [Math.random(), [Math.random(), Math.random(), Math.random()]],
+      data,
     };
-    return data;
   }
 }
