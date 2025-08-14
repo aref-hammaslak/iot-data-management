@@ -1,4 +1,11 @@
-import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Validate,
+} from 'class-validator';
 
 export class SaveSignalDto {
   @IsNotEmpty()
@@ -11,10 +18,32 @@ export class SaveSignalDto {
 
   @IsNotEmpty()
   @IsArray()
-  data: [number, [number, number, number]];
+  @ArrayMinSize(1)
+  @Validate(
+    (_, value) => {
+      if (!Array.isArray(value)) return false;
+      // value should be an array of [number, [number, number, number]]
+      return value.every((item) => {
+        console.log(item);
+        return (
+          Array.isArray(item) &&
+          item.length === 2 &&
+          typeof item[0] === 'number' &&
+          Array.isArray(item[1]) &&
+          item[1].length === 3 &&
+          item[1].every((n) => typeof n === 'number')
+        );
+      });
+    },
+    {
+      message:
+        'Each data entry must be a tuple [number, [number, number, number]]',
+    },
+  )
+  data: [number, [number, number, number]][];
 }
 
-// example 
+// example
 // {
 //   "66bb584d4ae73e488c30a072": {
 //     "data": [
