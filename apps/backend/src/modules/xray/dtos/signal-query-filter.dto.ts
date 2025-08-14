@@ -1,9 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
+  IsIn,
   IsNumber,
   IsOptional,
   IsPositive,
+  IsString,
 } from 'class-validator';
 
 export class SignalQueryFilterDto {
@@ -53,4 +55,16 @@ export class SignalQueryFilterDto {
   @IsNumber()
   @IsPositive()
   dataLengthMax?: number;
+
+  @ApiPropertyOptional({ description: 'Sort by', example: 'time' })
+  @IsOptional()
+  @IsString()
+  @IsIn(['time', 'dataVolume', 'dataLength'])
+  sortBy: 'time' | 'dataVolume' | 'dataLength' = 'time';
+
+  @ApiPropertyOptional({ description: 'Sort order', example: 'asc' })
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  sortOrder: 'asc' | 'desc' = 'asc';
 }
