@@ -23,14 +23,14 @@ export class SignalService {
     }
     const { deviceId, time, data } = signal;
     const dataVolume = Buffer.byteLength(JSON.stringify(data));
-    const xraySignal = new this.xraySignalModel({
+    const xraySignal = await this.xraySignalModel.create({
       deviceId,
       time,
       dataLength: data.length,
       dataVolume,
       rawData: data,
     });
-    await xraySignal.save();
+    return xraySignal;
   }
 
   async findAll(signalFilter: SignalQueryFilterDto, pagination: PaginationDto) {
@@ -82,23 +82,14 @@ export class SignalService {
     if (deviceId) {
       query.deviceId = deviceId;
     }
-    if (timeStart) {
-      query.time = { $gte: timeStart };
+    if (timeStart || timeEnd) {
+      query.time = { $gte: timeStart, $lte: timeEnd };
     }
-    if (timeEnd) {
-      query.time = { $lte: timeEnd };
+    if (dataVolumeMin || dataVolumeMax) {
+      query.dataVolume = { $gte: dataVolumeMin, $lte: dataVolumeMax };
     }
-    if (dataVolumeMin) {
-      query.dataVolume = { $gte: dataVolumeMin };
-    }
-    if (dataVolumeMax) {
-      query.dataVolume = { $lte: dataVolumeMax };
-    }
-    if (dataLengthMin) {
-      query.dataLength = { $gte: dataLengthMin };
-    }
-    if (dataLengthMax) {
-      query.dataLength = { $lte: dataLengthMax };
+    if (dataLengthMin || dataLengthMax) {
+      query.dataLength = { $gte: dataLengthMin, $lte: dataLengthMax };
     }
     return query;
   }

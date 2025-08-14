@@ -41,7 +41,6 @@ export class RabbitMQService implements OnModuleInit {
         (msg) => {
           if (msg) {
             const content = JSON.parse(msg.content.toString()) as SaveSignalDto;
-            this.logger.log('📩 Received:', content);
             this.signalService
               .saveSignal(content)
               .then(() => {
