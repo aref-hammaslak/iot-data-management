@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { XRaySignal } from '../database/models/xray-signal.model';
 import { SaveSignalDto } from './dtos/save-signal.dto';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class SignalService {
@@ -11,6 +13,12 @@ export class SignalService {
   ) {}
 
   async saveSignal(signal: SaveSignalDto) {
+    // Validate signal
+    const signalInstance = plainToInstance(SaveSignalDto, signal);
+    const errors = await validate(signalInstance);
+    if (Array.isArray(errors) && errors.length > 0) {
+      throw new BadRequestException(errors);
+    }
     const { deviceId, time, data } = signal;
     const dataVolume = Buffer.byteLength(JSON.stringify(data));
     const xraySignal = new this.xraySignalModel({
