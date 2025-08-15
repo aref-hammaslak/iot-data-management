@@ -1,4 +1,4 @@
-FROM node:20-alpine 
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,15 @@ COPY apps/producer ./apps/producer
 RUN printf '{ "extends": "./tsconfig.json", "compilerOptions": { "outDir": "./dist/producer" }, "include": ["apps/producer/**/*.ts"] }' > tsconfig.producer.json \
  && npx tsc -p tsconfig.producer.json
 
-RUN npm prune --omit=dev
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+ARG NPM_MIRROR=https://mirror-npm.runflare.com
+RUN npm --registry=$NPM_MIRROR ci --omit=dev
+
+COPY --from=builder /app/dist/producer ./dist/producer
 
 USER node
 CMD ["node", "dist/producer/main.js"]
