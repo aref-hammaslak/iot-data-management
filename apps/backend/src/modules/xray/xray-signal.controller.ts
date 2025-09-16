@@ -17,7 +17,6 @@ import {
   ApiOperation,
   ApiQuery,
   ApiResponse,
-  getSchemaPath,
 } from '@nestjs/swagger';
 import { PaginationDto } from './dtos/pagination.dto';
 
@@ -41,16 +40,12 @@ export class XraySignalController {
   @ApiQuery({
     name: 'signalQueryFilter',
     required: false,
-    style: 'deepObject',
-    explode: true,
-    schema: { $ref: getSchemaPath(SignalQueryFilterDto) },
+    type: SignalQueryFilterDto,
   })
   @ApiQuery({
     name: 'pagination',
     required: false,
-    style: 'deepObject',
-    explode: true,
-    schema: { $ref: getSchemaPath(PaginationDto) },
+    type: PaginationDto,
   })
   @ApiOperation({ summary: 'Get all signals' })
   @ApiResponse({ status: 200, description: 'Signals fetched successfully' })
@@ -77,9 +72,7 @@ export class XraySignalController {
   @ApiQuery({
     name: 'signalQueryFilter',
     required: false,
-    style: 'deepObject',
-    explode: true,
-    schema: { $ref: getSchemaPath(SignalQueryFilterDto) },
+    type: SignalQueryFilterDto,
   })
   @ApiResponse({ status: 200, description: 'Signals deleted successfully' })
   @Delete()
