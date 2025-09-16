@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabitmq.service';
 import { XrayModule } from '../xray/xray-signal.module';
+import { RabitmqController } from './rabitmq.controller';
 
 @Module({
   imports: [XrayModule],
-  controllers: [],
-  providers: [RabbitMQService],
-  exports: [RabbitMQService],
+  controllers: [RabitmqController],
+  exports: [],
 })
 export class RabbitMQModule {}

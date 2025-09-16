@@ -22,9 +22,14 @@ export class XrayProducerSimulator {
   }
 
   sendXrayData(data: SaveSignalDto) {
+    const packet = {
+      pattern: 'x-ray-signal',
+      data: data,
+    };
     return this.channel.sendToQueue(
       XRAY_QUEUE,
-      Buffer.from(JSON.stringify(data)),
+      Buffer.from(JSON.stringify(packet)),
+      { persistent: true },
     );
   }
 
