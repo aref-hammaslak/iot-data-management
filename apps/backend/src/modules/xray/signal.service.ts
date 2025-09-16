@@ -40,9 +40,9 @@ export class SignalService {
     const [signals, total] = await Promise.all([
       this.xraySignalModel
         .find(query)
+        .sort({ [signalFilter.sortBy]: signalFilter.sortOrder })
         .skip(skip)
         .limit(limit)
-        .sort({ [signalFilter.sortBy]: signalFilter.sortOrder })
         .exec(),
       this.xraySignalModel.countDocuments(query).exec(),
     ]);
